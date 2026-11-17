@@ -12,17 +12,19 @@
     "./file": "./src/file.js"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "lint": "eslint ."
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
-    "read-excel-file": "9.3.17",
     "sax": "1.6.1",
     "yauzl": "3.4.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "eslint": "9.39.1",
     "fflate": "0.8.3"
   }
 }
