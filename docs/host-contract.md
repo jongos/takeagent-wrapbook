@@ -15,3 +15,9 @@ The integration manifest is descriptive build metadata. It does not grant author
 Mapped values-only XLSX parsing now runs in a bounded worker. Require exact worksheet and rectangular range; use profile `wrapbook-pas-mapped-xlsx-v1` and `format: xlsx`. See README for archive, cell, output, heap and timeout limits and rejected constructs. Text identifiers are mandatory; numeric codes are rejected. Original source cell references survive extraction. This is not a native Wrapbook layout profile and does not certify arbitrary exports. Keep upload/body/concurrency limits outside this library, and isolate untrusted parsing at the host process boundary. No production UI, retention or authorization is supplied.
 
 Errors are intentionally short and exclude raw cell content. The host should show the error without echoing uploaded payroll/bank data. Synthetic tests cover library scope checks; production authentication, rate limits, storage, retention and UI behavior require host tests.
+
+## Bounded host responses
+
+Use `await previewFileForHost(bytes, options, trustedContext)` from the root exports for HTTP/UI previews. It validates and reconciles the complete report first, then returns at most 30 rows, findings and XLSX cell-provenance records (optional `{limit}` 1–100 as fourth argument). Full totals and identity are preserved; `totalRowCount`, `totalFindingCount`, `truncated` and `presentationOnly: true` explicitly describe the view. Serialized output cannot exceed 256,000 UTF-8 bytes; unusually large metadata fails visibly. `presentPreview(fullResult, {limit})` presents an already validated full result.
+
+Keep the original full result for comparison/import logic; never pass truncated presentation rows to `compare` or persist them as a complete snapshot. `previewFile` remains the complete-data API. The host must still authenticate, remove private scope identifiers where appropriate and enforce request/concurrency limits.

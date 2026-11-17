@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-export {previewFile} from './file.js';
+export {previewFile,previewFileForHost} from './file.js';
+export {presentPreview} from './presentation.js';
 export {previewCsv} from './csv.js';
 export {previewXlsx} from './xlsx.js';
 export {costFindings} from './companion.js';

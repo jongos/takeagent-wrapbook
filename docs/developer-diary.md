@@ -41,3 +41,9 @@ Narrowed the unsent vendor request to personal developer learning with synthetic
 Added selected values-only XLSX parsing in a terminated, time/heap-bounded worker with ZIP/XML preflight and 2 MB serialized response cap. Explicit mapping and trusted scope feed the existing signed exact-money reconciliation. Numeric identifiers fail closed; provenance retains original cells. Added unified previewFile exports and a local no-write CLI. Pinned parser dependencies and CI installation/audit; documented official GL formula behavior and the deliberately narrow interim contract.
 
 Validation: 72 tests passed locally, including hostile containers, formula caches, shared-string response amplification, numeric account identity, selection isolation, source offsets, scope mismatch and actual CLI execution. npm audit --omit=dev reports zero vulnerabilities. Native vendor exports, company/PAS access, live APIs and production host UI remain unverified; no deployment, vendor contact or real data used. Remote CI is a subsequent verification step.
+
+## 2026-11-17 — Bound host preview presentation after full reconciliation
+
+Resolved issue #3 with presentPreview and previewFileForHost. Full-data APIs remain unchanged. Presentation caps rows, findings and XLSX source-cell arrays; exposes complete counts and a presentation-only marker; enforces a 256 KB serialized ceiling. Documentation distinguishes this view from a complete import snapshot.
+
+Validation: all 74 tests passed, including 10,000 rows / 20,000 findings, unchanged full totals/identity, bounded output, immutable source data, omitted-row reconciliation errors and oversized metadata rejection. No host deployment or vendor-native certification performed.
