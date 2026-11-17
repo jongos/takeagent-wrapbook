@@ -37,6 +37,7 @@ export function preview(input, context) {
     return result;
   });
   const leafPaths=new Set(rows.filter(r=>r.accountPath).map(r=>r.accountPath.join('/')));
+  if(leafPaths.size && rows.some(r=>!r.accountPath))fail('Account hierarchy must be supplied for every row');
   for(const row of rows)if(row.accountPath)for(let depth=1;depth<row.accountPath.length;depth++)if(leafPaths.has(row.accountPath.slice(0,depth).join('/')))fail('Account hierarchy contains both parent and detail amounts');
   for (const key of fields) if (money(input.controlTotals?.[key]) !== totals[key]) fail('Source totals do not reconcile');
   const metadata = Object.fromEntries(['tenantId','projectId','revision','periodBasis','sourceName','currency','asOf','commitmentBasis','actualsBasis'].map(k=>[k,m[k]]));
@@ -53,6 +54,6 @@ export function compare(previous,current) {
   if (previous.id === current.id) return {duplicate:true,deltas:null};
   if (previous.metadata.revision === current.metadata.revision) fail('Revision identifier reused with changed content');
   const before=new Map(previous.rows.map(r=>[r.account,r])),after=new Map(current.rows.map(r=>[r.account,r]));
-  const accounts=[...new Set([...before.keys(),...after.keys()])].sort().map(account=>({account,change:!before.has(account)?'added':!after.has(account)?'removed':'retained',deltas:Object.fromEntries(fields.map(k=>[k,(after.get(account)?.[k]??0)-(before.get(account)?.[k]??0)]))}));
+  const accounts=[...new Set([...before.keys(),...after.keys()])].sort().map(account=>({account,change:!before.has(account)?'added':!after.has(account)?'removed':'retained',previousPath:before.get(account)?.accountPath?[...before.get(account).accountPath]:null,currentPath:after.get(account)?.accountPath?[...after.get(account).accountPath]:null,hierarchyChanged:JSON.stringify(before.get(account)?.accountPath??null)!==JSON.stringify(after.get(account)?.accountPath??null),deltas:Object.fromEntries(fields.map(k=>[k,(after.get(account)?.[k]??0)-(before.get(account)?.[k]??0)]))}));
   return {duplicate:false,deltas:Object.fromEntries(fields.map(k=>[k,current.totals[k]-previous.totals[k]])),accounts,warning:'Cost changes do not establish a financing or cash-timing gap.'};
 }
