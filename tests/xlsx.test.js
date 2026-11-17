@@ -20,4 +20,38 @@ test('unselected visible worksheet content stays out of preview',async()=>{const
 
 test('numeric account identifiers fail rather than losing displayed leading zeroes',async()=>{await assert.rejects(previewXlsx(workbook({changeSheet:xml=>xml.replace(/<c r="A2"[^>]*>.*?<\/c>/,'<c r="A2"><v>123</v></c>')}),options,context),/NUMERIC_IDENTIFIER/);});
 test('source range excludes arbitrary option metadata',async()=>{const p=await previewXlsx(workbook(),{...options,range:{...options.range,secret:'exclude'}},context);assert.deepEqual(p.source.range,options.range);});
+test('formula string cells (t="str") read cached text from v, not inline string',async()=>{
+ const account='Acct1100';
+ const changeSheet=xml=>xml
+  .replace(/<c r="A2"[^>]*>.*?<\/c>/,`<c r="A2" t="str"><v>${account}</v></c>`)
+  .replace(/<c r="C2"[^>]*>.*?<\/c>/,`<c r="C2" t="inlineStr"><is><t>1000/${account}</t></is></c>`);
+ const p=await previewXlsx(workbook({changeSheet}),options,context);
+ assert.equal(p.rows[0].account,account);
+ assert.equal(p.rows[0].sourceRow,2);
+});
+test('sheet names with XML entities resolve after decode',async()=>{
+ const encodedName='Synthetic &amp; costs';
+ const extra={'xl/workbook.xml':`<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${encodedName}" sheetId="1" r:id="rId1"/></sheets></workbook>`};
+ const p=await previewXlsx(workbook({extra}),{...options,sheet:'Synthetic & costs'},context);
+ assert.equal(p.source.sheet,'Synthetic & costs');
+ assert.equal(p.totals.actuals,5000);
+});
+test('cells without r attributes derive sequential columns within a row',async()=>{
+ const changeSheet=xml=>xml.replace('<row r="2">','<row r="2">').replaceAll(/<c r="[A-Z]\d+"([^>]*)>/g,(match,attrs)=>`<c${attrs}>`);
+ const p=await previewXlsx(workbook({changeSheet}),options,context);
+ assert.equal(p.rows[0].account,'1100');
+ assert.equal(p.totals.actuals,5000);
+});
+for(const [name,cell,location] of [
+ ['boolean amount','<c r="F2" t="b"><v>1</v></c>','amount'],
+ ['error amount','<c r="F2" t="e"><v>7</v></c>','amount'],
+ ['date amount','<c r="F2" t="d"><v>45292</v></c>','amount'],
+ ['boolean text','<c r="A2" t="b"><v>1</v></c>','text'],
+ ['error text','<c r="A2" t="e"><v>7</v></c>','text'],
+]){
+ test(`XLSX rejects ${name} in ${location} column`,async()=>{
+  const changeSheet=xml=>xml.replace(location==='amount'?/<c r="F2"[^>]*>.*?<\/c>/:/<c r="A2"[^>]*>.*?<\/c>/,cell);
+  await assert.rejects(previewXlsx(workbook({changeSheet}),options,context),/XLSX_CELL_TYPE_OR_LENGTH/);
+ });
+}
 

@@ -3,9 +3,13 @@ import sax from 'sax';
 
 export const xlsxLimits=Object.freeze({compressed:2_000_000,expanded:15_000_000,entry:8_000_000,entries:150,sheets:5,rows:10002,columns:32,cellCharacters:1000});
 function reject(code){const error=new Error(code);error.code=code;throw error;}
+const disallowedCellTypes=new Set(['b','d','e']);
+function decodeXmlEntities(value){
+ return value.replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&quot;','"').replaceAll('&apos;',"'").replaceAll('&amp;','&');
+}
 function address(value){const match=/^([A-Z]{1,3})([1-9]\d{0,4})$/.exec(value||'');if(!match)reject('XLSX_ADDRESS');let column=0;for(const c of match[1])column=column*26+c.charCodeAt(0)-64;if(column>xlsxLimits.columns||Number(match[2])>xlsxLimits.rows)reject('XLSX_DIMENSIONS');return {row:Number(match[2]),column};}
 function inspectXml(xml){
- const p=sax.parser(true,{xmlns:true});let depth=0,sheets=0,currentRow=0,lastRow=0,cells=0;const addresses=new Set();
+ const p=sax.parser(true,{xmlns:true});let depth=0,sheets=0,currentRow=0,lastRow=0,cells=0,nextCol=0;const addresses=new Set();
  p.ondoctype=()=>reject('XLSX_DOCTYPE');p.onerror=()=>reject('XLSX_XML');
  p.onopentag=tag=>{
   if(++depth>40)reject('XLSX_XML_DEPTH');const name=tag.local;const attr=key=>tag.attributes[key]?.value;
@@ -15,8 +19,13 @@ function inspectXml(xml){
   if(name==='Relationship'&&(attr('TargetMode')?.toLowerCase()==='external'||/(?:^|\/)\.\.(?:\/|$)|^[a-z]+:|\\/i.test(attr('Target')||'')))reject('XLSX_EXTERNAL_RELATIONSHIP');
   if(name==='Override'&&/macroEnabled|vbaProject|activeX/i.test(attr('ContentType')||''))reject('XLSX_ACTIVE_CONTENT');
   if(name==='dimension')for(const ref of (attr('ref')||'').split(':'))address(ref);
-  if(name==='row'){currentRow=Number(attr('r'));if(!Number.isInteger(currentRow)||currentRow<=lastRow||currentRow>xlsxLimits.rows)reject('XLSX_ROW_ORDER');lastRow=currentRow;}
-  if(name==='c'){if(++cells>xlsxLimits.rows*xlsxLimits.columns)reject('XLSX_CELL_LIMIT');const a=address(attr('r'));if(a.row!==currentRow||addresses.has(attr('r')))reject('XLSX_CELL_ORDER');addresses.add(attr('r'));}
+  if(name==='row'){currentRow=Number(attr('r'));if(!Number.isInteger(currentRow)||currentRow<=lastRow||currentRow>xlsxLimits.rows)reject('XLSX_ROW_ORDER');lastRow=currentRow;nextCol=1;}
+  if(name==='c'){
+   if(++cells>xlsxLimits.rows*xlsxLimits.columns)reject('XLSX_CELL_LIMIT');
+   if(disallowedCellTypes.has(attr('t')||''))reject('XLSX_CELL_TYPE_OR_LENGTH');
+   const ref=attr('r');const column=ref?address(ref).column:nextCol++;
+   if(ref){const a=address(ref);if(a.row!==currentRow||addresses.has(ref))reject('XLSX_CELL_ORDER');addresses.add(ref);}else{if(!currentRow)reject('XLSX_CELL_ORDER');addresses.add(`${currentRow}:${column}`);}
+  }
  };
  p.onclosetag=()=>depth--;p.write(xml).close();
 }
@@ -39,8 +48,14 @@ function parseSharedStrings(xml){
 function resolveWorksheetPart(parts,sheetName){
  const workbook=parts.get('xl/workbook.xml');
  if(!workbook)reject('XLSX_REQUIRED_PARTS');
- const escaped=sheetName.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
- const sheetMatch=new RegExp(`<sheet\\b[^>]*\\bname="${escaped}"[^>]*\\br:id="([^"]+)"`,'i').exec(workbook)||new RegExp(`<sheet\\b[^>]*\\br:id="([^"]+)"[^>]*\\bname="${escaped}"`,'i').exec(workbook);
+ let sheetMatch;
+ for(const tag of workbook.matchAll(/<sheet\b([^>]*)\/?>/gi)){
+  const attrs=tag[1];
+  const nameMatch=/\bname="([^"]*)"/i.exec(attrs);
+  const idMatch=/\br:id="([^"]+)"/i.exec(attrs);
+  if(!nameMatch||!idMatch)continue;
+  if(decodeXmlEntities(nameMatch[1])===sheetName){sheetMatch=[null,idMatch[1]];break;}
+ }
  if(!sheetMatch)reject('XLSX_SHEET_SELECTION');
  const rels=parts.get('xl/_rels/workbook.xml.rels');
  if(!rels)reject('XLSX_REQUIRED_PARTS');
@@ -53,7 +68,7 @@ function resolveWorksheetPart(parts,sheetName){
 }
 function extractWorksheetCells(xml,sharedStrings){
  const cells=new Map();
- let currentRow=0,currentCol=0,cellType='',text='',inlineText=false,captureV=false,captureT=false;
+ let currentRow=0,currentCol=0,nextCol=0,cellType='',text='',inlineText=false,captureV=false,captureT=false;
  const stack=[];
  const p=sax.parser(true,{xmlns:true});
  p.ondoctype=()=>reject('XLSX_DOCTYPE');p.onerror=()=>reject('XLSX_XML');
@@ -61,10 +76,17 @@ function extractWorksheetCells(xml,sharedStrings){
  p.onopentag=tag=>{
   stack.push(tag.local);
   const name=tag.local;const attr=key=>tag.attributes[key]?.value;
-  if(name==='row')currentRow=Number(attr('r'));
-  if(name==='c'){const a=address(attr('r'));currentRow=a.row;currentCol=a.column;cellType=attr('t')||'';text='';inlineText=false;captureV=false;captureT=false;}
+  if(name==='row'){currentRow=Number(attr('r'));nextCol=1;}
+  if(name==='c'){
+   cellType=attr('t')||'';
+   if(disallowedCellTypes.has(cellType))reject('XLSX_CELL_TYPE_OR_LENGTH');
+   const ref=attr('r');
+   if(ref){const a=address(ref);currentRow=a.row;currentCol=a.column;nextCol=a.column+1;}
+   else{if(!currentRow)reject('XLSX_CELL_ORDER');currentCol=nextCol++;}
+   text='';inlineText=false;captureV=false;captureT=false;
+  }
   if(name==='v')captureV=true;
-  if(name==='t')captureT=inlineText||cellType==='inlineStr'||cellType==='str';
+  if(name==='t')captureT=inlineText||cellType==='inlineStr';
   if(name==='is')inlineText=true;
  };
  p.ontext=value=>{if(captureT||captureV)text+=value;};
@@ -77,8 +99,10 @@ function extractWorksheetCells(xml,sharedStrings){
     if(!Number.isInteger(index)||index<0||index>=sharedStrings.length)reject('XLSX_CELL_TYPE_OR_LENGTH');
     text=sharedStrings[index];
     commit(false);
-   }else if(cellType==='inlineStr'||cellType==='str'){
+   }else if(cellType==='inlineStr'){
     /* committed on </is> */
+   }else if(cellType==='str'){
+    commit(false);
    }else{
     commit(true);
    }
