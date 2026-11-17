@@ -25,3 +25,5 @@ Next: obtain synthetic representative native exports; implement bounded CSV/XLSX
 ## Research
 
 [Wrapbook PAS cost reports](https://help.wrapbook.com/v1/docs/cost-reports-pas), reviewed November 17, 2026, documents CSV/XLSX/PDF exports and configurable report columns. Column names and ordering can change, so a fixed native schema cannot be assumed. Effective-date PO history and filters also affect interpretation. Public API access and partner terms remain unverified. No vendor contact, fees, credentials or deployment are part of this spike.
+
+The trusted context must include the selected project's currency. sourceName is a stable source-report identity and must remain constant across revisions.

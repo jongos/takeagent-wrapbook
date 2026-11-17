@@ -16,7 +16,7 @@ export function preview(input, context) {
   const m = input.metadata;
   if (!m || m.tenantId !== context.tenantId || m.projectId !== context.projectId) fail('Project or tenant mismatch');
   for (const key of ['tenantId','projectId','revision','periodBasis','sourceName']) if (typeof m[key] !== 'string' || !m[key].trim()) fail('Missing provenance');
-  if (!['USD','EUR','GBP','CAD','AUD'].includes(m.currency)) fail('Unsupported currency; no FX conversion is performed');
+  if (!['USD','EUR','GBP','CAD','AUD'].includes(m.currency) || m.currency !== context.currency) fail('Unsupported or mismatched currency; no FX conversion is performed');
   if (!date(m.asOf) || !date(context.today) || m.asOf > context.today) fail('Invalid report date');
   if (m.commitmentBasis !== 'remaining-unpaid-only' || m.actualsBasis !== 'cumulative') fail('Ambiguous actual or commitment basis');
   if (!Array.isArray(input.rows) || !input.rows.length || input.rows.length > 10000) fail('Invalid row count');
@@ -41,7 +41,7 @@ export function preview(input, context) {
 }
 
 export function compare(previous,current) {
-  for (const key of ['tenantId','projectId','currency','periodBasis']) if (previous.metadata[key] !== current.metadata[key]) fail('Incompatible snapshots');
+  for (const key of ['tenantId','projectId','currency','periodBasis','sourceName']) if (previous.metadata[key] !== current.metadata[key]) fail('Incompatible snapshots');
   if (current.metadata.asOf < previous.metadata.asOf) fail('Older report cannot replace newer snapshot');
   if (previous.id === current.id) return {duplicate:true,deltas:null};
   if (previous.metadata.revision === current.metadata.revision) fail('Revision identifier reused with changed content');
