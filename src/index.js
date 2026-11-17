@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-export {previewFile,previewFileForHost} from './file.js';
+export {previewFile,previewFileForHost,previewFileFindingLimit} from './file.js';
 export {presentPreview} from './presentation.js';
 export {previewCsv} from './csv.js';
 export {previewXlsx} from './xlsx.js';
@@ -53,8 +53,11 @@ export function preview(input, context) {
   return {...content,id,warnings,readOnly:true};
 }
 
+const snapshotBasisKeys=['actualsBasis','commitmentBasis'];
+const allowedSnapshotBasis={actualsBasis:new Set(['cumulative']),commitmentBasis:new Set(['remaining-unpaid-only'])};
 export function compare(previous,current) {
-  for (const key of ['tenantId','projectId','currency','periodBasis','sourceName']) if (previous.metadata[key] !== current.metadata[key]) fail('Incompatible snapshots');
+  for (const key of ['tenantId','projectId','currency','periodBasis','sourceName',...snapshotBasisKeys]) if (previous.metadata[key] !== current.metadata[key]) fail('Incompatible snapshots');
+  for (const key of snapshotBasisKeys) for (const snapshot of [previous,current]) if (!allowedSnapshotBasis[key].has(snapshot.metadata[key])) fail('Incompatible snapshots');
   if (current.metadata.asOf < previous.metadata.asOf) fail('Older report cannot replace newer snapshot');
   if (previous.id === current.id) return {duplicate:true,deltas:null};
   if (previous.metadata.revision === current.metadata.revision) fail('Revision identifier reused with changed content');

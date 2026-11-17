@@ -9,6 +9,7 @@ export function parseCsv(bytes) {
   if (!(bytes instanceof Uint8Array) || !bytes.length || bytes.length > limits.bytes) reject('CSV byte limit');
   let text;
   try { text = new TextDecoder('utf-8', {fatal:true}).decode(bytes); } catch { reject('CSV must be UTF-8'); }
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
   if (text.includes('\0')) reject('NUL is not supported');
   const records=[]; let cells=[], cell='', state='start', line=1, sourceRow=1;
   function field() { if (cell.length > limits.cellCharacters) reject('CSV cell limit'); cells.push(cell); cell=''; state='start'; if (cells.length>limits.columns) reject('CSV column limit'); }
