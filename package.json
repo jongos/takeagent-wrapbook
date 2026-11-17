@@ -1,9 +1,28 @@
 {
   "name": "takeagent-wrapbook",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "exports": {".": "./src/index.js", "./csv": "./src/csv.js", "./companion": "./src/companion.js", "./manifest": "./integration-manifest.json"},
-  "scripts": {"test": "node --test"},
-  "engines": {"node": ">=22"}
+  "exports": {
+    ".": "./src/index.js",
+    "./csv": "./src/csv.js",
+    "./companion": "./src/companion.js",
+    "./manifest": "./integration-manifest.json",
+    "./xlsx": "./src/xlsx.js",
+    "./file": "./src/file.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "read-excel-file": "9.3.17",
+    "sax": "1.6.1",
+    "yauzl": "3.4.0"
+  },
+  "devDependencies": {
+    "fflate": "0.8.3"
+  }
 }

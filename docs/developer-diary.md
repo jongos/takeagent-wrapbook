@@ -35,3 +35,9 @@ Validation: all 51 synthetic tests pass, including four new report-boundary regr
 ## 2026-11-17 â€” Clarify personal free evaluation request
 
 Narrowed the unsent vendor request to personal developer learning with synthetic data, a free time-limited environment or export-only package, and no ongoing corporate use, payroll operations or paid enrollment. This is documentation only; the preceding 51-test result remains applicable because no runtime or test source changed. Wording and diff checks passed. The request remains unsent and access remains unverified.
+
+## 2026-11-17 — Complete bounded interim file preview workflow
+
+Added selected values-only XLSX parsing in a terminated, time/heap-bounded worker with ZIP/XML preflight and 2 MB serialized response cap. Explicit mapping and trusted scope feed the existing signed exact-money reconciliation. Numeric identifiers fail closed; provenance retains original cells. Added unified previewFile exports and a local no-write CLI. Pinned parser dependencies and CI installation/audit; documented official GL formula behavior and the deliberately narrow interim contract.
+
+Validation: 72 tests passed locally, including hostile containers, formula caches, shared-string response amplification, numeric account identity, selection isolation, source offsets, scope mismatch and actual CLI execution. npm audit --omit=dev reports zero vulnerabilities. Native vendor exports, company/PAS access, live APIs and production host UI remain unverified; no deployment, vendor contact or real data used. Remote CI is a subsequent verification step.

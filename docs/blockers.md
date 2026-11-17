@@ -14,8 +14,10 @@
 
 ## Engineering
 
-- Implement safe XLSX extraction through the host's bounded document pipeline; verify hidden cells, formulas, merged regions, archive expansion and original cell provenance.
+- Integrate the tested bounded values-only XLSX worker with host upload/concurrency isolation. Native formula-rich or subtotal reports remain unsupported.
 - Validate vendor-native profiles, intermediate subtotal/hierarchy reconciliation, episodic scopes and localized numeric formats before adding them to the support matrix. The current CSV adapter rejects unsupported layouts rather than guessing.
 - Wire authenticated host preview UI, entitlements, quotas, retention/deletion and transactional idempotency; add cross-tenant and end-to-end tests in TakeAgent. This repo alone does not deploy a production feature.
 - Connect reviewed snapshots to finance review without treating cost measures as funding evidence. Costs alone cannot establish a financing or cash timing gap.
 - Live feeds require separate implementation and operational acceptance after vendor access is verified.
+
+Tracked follow-up: [native profile validation](https://github.com/jongos/takeagent-wrapbook/issues/1) and [optional evaluation/API access](https://github.com/jongos/takeagent-wrapbook/issues/2).

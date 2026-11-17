@@ -1,4 +1,5 @@
 {
+  "format": "csv",
   "profile": "wrapbook-pas-mapped-csv-v1",
   "reviewedMapping": true,
   "completeForSelectedScope": true,

@@ -1,4 +1,8 @@
 import { createHash } from 'node:crypto';
+export {previewFile} from './file.js';
+export {previewCsv} from './csv.js';
+export {previewXlsx} from './xlsx.js';
+export {costFindings} from './companion.js';
 
 export const fields = Object.freeze(['originalBudget','revisedBudget','actuals','openCommitments','estimateToComplete','estimatedFinalCost']);
 const fail = message => { throw new Error(message); };
