@@ -47,3 +47,7 @@ Validation: 72 tests passed locally, including hostile containers, formula cache
 Resolved issue #3 with presentPreview and previewFileForHost. Full-data APIs remain unchanged. Presentation caps rows, findings and XLSX source-cell arrays; exposes complete counts and a presentation-only marker; enforces a 256 KB serialized ceiling. Documentation distinguishes this view from a complete import snapshot.
 
 Validation: all 74 tests passed, including 10,000 rows / 20,000 findings, unchanged full totals/identity, bounded output, immutable source data, omitted-row reconciliation errors and oversized metadata rejection. No host deployment or vendor-native certification performed.
+
+## 2026-11-17 — Record current optional host release
+
+Added `docs/host-release-status.md` linking the deployed TakeAgent CSV/Excel release and explaining the division between shared host file handling and this adapter. Preserved optional installation, no-new-configuration behavior and vendor-access limitations. Refetched origin and verified the existing adapter source was already synchronized. The complete repository suite passed 74/74 tests. This commit changes documentation only; no adapter or deployment change is claimed.
