@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "exports": {".": "./src/index.js", "./csv": "./src/csv.js", "./manifest": "./integration-manifest.json"},
+  "exports": {".": "./src/index.js", "./csv": "./src/csv.js", "./companion": "./src/companion.js", "./manifest": "./integration-manifest.json"},
   "scripts": {"test": "node --test"},
   "engines": {"node": ">=22"}
 }

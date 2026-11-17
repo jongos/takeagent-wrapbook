@@ -34,3 +34,5 @@ The reader accepts UTF-8 comma-delimited CSV with strict quoting and CRLF/LF lin
 [Wrapbook PAS cost reports](https://help.wrapbook.com/v1/docs/cost-reports-pas), reviewed November 17, 2026, documents CSV/XLSX/PDF exports and configurable report columns. Column names and ordering can change, so a fixed native schema cannot be assumed. Effective-date PO history and filters also affect interpretation. Public API access and partner terms remain unverified. No vendor contact, fees, credentials or deployment are part of this spike.
 
 The trusted context must include the selected project's currency. sourceName is a stable source-report identity and must remain constant across revisions.
+
+`compare` includes account-level additions/removals and deltas even when report totals stay unchanged. `costFindings` from `src/companion.js` returns source-linked questions for EFC above revised budget and actuals above EFC. It carries warnings forward and deliberately returns null funding/cash-timing gaps; cost data cannot establish those values.

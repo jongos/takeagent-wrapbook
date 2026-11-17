@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {compare,preview,fields} from '../src/index.js';
+import {costFindings} from '../src/companion.js';
+const ctx={tenantId:'t',projectId:'p',currency:'USD',today:'2026-11-17'};
+const meta={...ctx,revision:'1',periodBasis:'all',sourceName:'source',asOf:'2026-11-01',commitmentBasis:'remaining-unpaid-only',actualsBasis:'cumulative'};
+function input(){return {profile:'wrapbook-pas-synthetic-v1',metadata:{...meta},rows:[{account:'1000',...Object.fromEntries(fields.map(k=>[k,'100']))}],controlTotals:Object.fromEntries(fields.map(k=>[k,'100']))};}
+test('same-total revision reveals added and removed accounts',()=>{const i=input(),a=preview(i,ctx);i.metadata.revision='2';i.rows[0].account='2000';const c=compare(a,preview(i,ctx));assert.equal(c.deltas.actuals,0);assert.deepEqual(c.accounts.map(x=>x.change),['removed','added']);assert.equal(c.accounts[0].deltas.actuals,-10000);});
+test('cost overrun has provenance without implying funding gap',()=>{const i=input();i.rows[0].estimatedFinalCost='110';i.controlTotals.estimatedFinalCost='110';const p=preview(i,ctx),before=structuredClone(p),f=costFindings(p);assert.equal(f.findings[0].amount,1000);assert.equal(f.findings[0].sourceRow,2);assert.equal(f.fundingGap,null);assert.equal(f.cashTimingGap,null);assert.deepEqual(p,before);});
+test('actuals exceeding EFC produces consistency question',()=>{const i=input();i.rows[0].actuals='110';i.controlTotals.actuals='110';assert.equal(costFindings(preview(i,ctx)).findings[0].code,'ACTUALS_ABOVE_EFC');});
+test('ancestor guard cannot be bypassed by lexical sibling order',()=>{const i=input();const amounts=Object.fromEntries(fields.map(k=>[k,'100']));i.rows=[{account:'A',accountPath:['A'],...amounts},{account:'A-sibling',accountPath:['A-sibling'],...amounts},{account:'child',accountPath:['A','child'],...amounts}];i.controlTotals=Object.fromEntries(fields.map(k=>[k,'300']));assert.throws(()=>preview(i,ctx),/parent/);});
