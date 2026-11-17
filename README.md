@@ -1,6 +1,6 @@
 # TakeAgent Wrapbook adapter spike
 
-Private, read-only development for [TakeAgent issue #59](https://github.com/jongos/takeagent/issues/59). This repository implements a synthetic mapped-row preview and comparison boundary. It does not connect to Wrapbook or modify TakeAgent projects.
+Private, read-only development for [TakeAgent issue #59](https://github.com/jongos/takeagent/issues/59). This repository implements bounded CSV mapping, synthetic cost-snapshot previews and revision comparisons. It does not connect to Wrapbook or modify TakeAgent projects. See `integration-manifest.json` for build discovery; live integration remains disabled.
 
 Run `npm test` with Node 22 or newer. No dependencies or credentials are required. See the test fixture for the input contract. `preview(input, context)` validates a caller-selected project and tenant, currency, report basis and control totals, then returns distinct cost fields in integer minor units, row provenance, a deterministic identity and warnings. `compare` checks snapshot compatibility and reports cost changes without claiming a funding gap.
 
@@ -9,7 +9,8 @@ Run `npm test` with Node 22 or newer. No dependencies or credentials are require
 | Source/profile | Status |
 | --- | --- |
 | `wrapbook-pas-synthetic-v1` mapped JSON rows | Tested synthetic contract only |
-| Native PAS CSV/XLSX | Not yet supported or verified |
+| `wrapbook-pas-mapped-csv-v1` explicitly mapped UTF-8 CSV | Tested with synthetic fixtures; no native vendor compatibility claim |
+| Native PAS export profiles / XLSX | Not yet supported or verified |
 | Cost Tracking exports | Not supported |
 | PDF | Not parsed; future reconciliation evidence only |
 | PO/GL merges and live API | Not implemented |
@@ -18,9 +19,15 @@ An integrating server must authenticate the caller and derive `context` from its
 
 ## Mapping requirements and remaining work
 
-The profile requires all six cost measures and separately supplied control totals. Missing fields fail rather than becoming zero. Credits are preserved. Actuals must be cumulative and commitments must be remaining unpaid obligations; no automatic PO/AP/payroll merge or EFC inference occurs. Only two-decimal USD/EUR/GBP/CAD/AUD are accepted; currency conversion is absent. One row per unique leaf account is required; hierarchical, episodic, summary/detail and multicurrency reports need further profiles. The caller must validate those semantics against the source report.
+The profile requires all six cost measures and explicit control totals. Missing fields fail rather than becoming zero. Credits are preserved. Actuals must be cumulative and commitments must be remaining unpaid obligations; no automatic PO/AP/payroll merge or EFC inference occurs. Only two-decimal USD/EUR/GBP/CAD/AUD are accepted; currency conversion is absent. One row per unique leaf account is required. Optional account paths preserve hierarchy; parent/detail mixtures are rejected. Episodic, summary/detail and multicurrency reports need further profiles. The caller must validate those semantics against the source report.
 
-Next: obtain synthetic representative native exports; implement bounded CSV/XLSX parsing and a reviewed mapping preview; reconcile account hierarchy and filters; connect previews to existing TakeAgent document/finance services; add authenticated project selection and explicit apply controls if persistence is introduced. No live integration or production readiness is claimed.
+See [host contract](docs/host-contract.md) for the integration boundary and [blockers](docs/blockers.md) for vendor, user and engineering gates. Native export validation, XLSX extraction, authenticated host UI and production verification remain open.
+
+## CSV preview
+
+Import `previewCsv` from `src/csv.js`. Pass file bytes, options like `fixtures/synthetic-options.json`, and trusted host project context. `fixtures/synthetic-costs.csv` is an invented report, not an actual Wrapbook export. `reviewedMapping` and `completeForSelectedScope` must be true after user review. One final `total` row supplies source totals. No data is written.
+
+The reader accepts UTF-8 comma-delimited CSV with strict quoting and CRLF/LF line endings. It bounds bytes (2 MB), records (10,002), columns (32), cell length (1,000) and detail rows (10,000). It rejects malformed input, extra columns, ambiguous mappings, formulas, localized amounts, duplicate accounts and unsupported row types without truncation. Source physical rows, mapped column numbers and file SHA-256 are included in the preview. Reordered columns work through explicit mapping.
 
 ## Research
 

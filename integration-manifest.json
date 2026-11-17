@@ -1,0 +1,10 @@
+{
+  "id": "wrapbook",
+  "displayName": "Wrapbook",
+  "status": "development",
+  "liveEnabled": false,
+  "capabilities": ["read-only-preview", "explicit-csv-mapping", "signed-cost-reconciliation", "revision-comparison", "source-row-provenance", "account-hierarchy"],
+  "blockers": ["Native PAS and Cost Tracking report compatibility unverified", "XLSX parsing not implemented", "Authenticated TakeAgent host integration and production verification required", "Live API availability and terms unverified"],
+  "sourceIssue": "https://github.com/jongos/takeagent/issues/59",
+  "repository": "https://github.com/jongos/takeagent-wrapbook"
+}

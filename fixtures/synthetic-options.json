@@ -1,0 +1,16 @@
+{
+  "profile": "wrapbook-pas-mapped-csv-v1",
+  "reviewedMapping": true,
+  "completeForSelectedScope": true,
+  "mapping": {
+    "account": "Account", "rowType": "Kind", "accountPath": "Hierarchy",
+    "originalBudget": "Original", "revisedBudget": "Revised", "actuals": "Actuals",
+    "openCommitments": "Open POs", "estimateToComplete": "ETC", "estimatedFinalCost": "EFC"
+  },
+  "metadata": {
+    "tenantId": "synthetic-tenant", "projectId": "synthetic-project", "currency": "USD",
+    "revision": "r1", "sourceName": "synthetic-pas-detail", "asOf": "2026-11-01",
+    "periodBasis": "cumulative;all-accounts;all-locations;effective-through-2026-11-01",
+    "commitmentBasis": "remaining-unpaid-only", "actualsBasis": "cumulative"
+  }
+}

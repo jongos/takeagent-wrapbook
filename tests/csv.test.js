@@ -1,0 +1,27 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {previewCsv,parseCsv,limits} from '../src/csv.js';
+import {fields} from '../src/index.js';
+const ctx={tenantId:'t',projectId:'p',currency:'USD',today:'2026-11-17'};
+const metadata={...ctx,revision:'1',periodBasis:'life-to-date',sourceName:'pas-selected-report',asOf:'2026-11-01',commitmentBasis:'remaining-unpaid-only',actualsBasis:'cumulative'};
+const mapping=Object.fromEntries(['account','rowType','accountPath',...fields].map(k=>[k,k]));
+const options={profile:'wrapbook-pas-mapped-csv-v1',reviewedMapping:true,completeForSelectedScope:true,mapping,metadata};
+const encode=s=>new TextEncoder().encode(s);
+function csv(){return [Object.keys(mapping).join(','),['1001','detail','1000/1001',...fields.map(()=>'10.25')].join(','),['1002','detail','1000/1002',...fields.map(()=>'-0.25')].join(','),['','total','',...fields.map(()=>'10.00')].join(',')].join('\r\n');}
+test('mapped CSV preserves exact signed amounts, hierarchy, physical source rows and total provenance',()=>{const p=previewCsv(encode(csv()),options,ctx);assert.equal(p.totals.actuals,1000);assert.deepEqual(p.rows[1].accountPath,['1000','1002']);assert.equal(p.rows[1].sourceRow,3);assert.equal(p.source.totalRow,4);assert.equal(p.source.columns.actuals,6);assert.equal(p.source.sha256.length,64);});
+test('quoted cells, escaped quotes, UTF-8 BOM and multiline source row numbering',()=>{const p=parseCsv(encode('\uFEFFa,b\r\n"a,b","c""d"\r\n"line\n2",z\r\nend,q'));assert.deepEqual(p.records[0].cells,['a,b','c"d']);assert.equal(p.records[2].sourceRow,5);});
+test('missing reviewed mapping rejected',()=>assert.throws(()=>previewCsv(encode(csv()),{...options,reviewedMapping:false},ctx)));
+test('partial or unknown report coverage rejected',()=>assert.throws(()=>previewCsv(encode(csv()),{...options,completeForSelectedScope:false},ctx),/completeness/));
+test('parent and leaf amounts cannot be mixed',()=>assert.throws(()=>previewCsv(encode(csv().replace('1002,detail,1000/1002','1000,detail,1000')),options,ctx),/parent/));
+test('reordered headers require explicit mapping and maintain result',()=>{const source=csv().split('\r\n').map(r=>r.split(',').reverse().join(',')).join('\n');assert.equal(previewCsv(encode(source),options,ctx).totals.actuals,1000);});
+test('no control total inference',()=>assert.throws(()=>previewCsv(encode(csv().split('\r\n').slice(0,-1).join('\n')),options,ctx),/control total/));
+test('nonreconciling totals rejected',()=>assert.throws(()=>previewCsv(encode(csv().replaceAll('10.00','9.99')),options,ctx),/reconcile/));
+test('subtotals never counted as details',()=>assert.throws(()=>previewCsv(encode(csv().replace('detail','subtotal')),options,ctx),/subtotal/));
+test('unrelated sensitive column rejected',()=>{const s=csv().split('\r\n').map((r,i)=>r+','+(i?'secret':'bank_account')).join('\n');assert.throws(()=>previewCsv(encode(s),options,ctx),/unrelated/);});
+test('mapping ambiguity rejected',()=>assert.throws(()=>previewCsv(encode(csv()),{...options,mapping:{...mapping,actuals:'originalBudget'}},ctx),/Ambiguous/));
+test('hierarchy leaf must match account',()=>assert.throws(()=>previewCsv(encode(csv().replace('1000/1001','1000/9999')),options,ctx),/hierarchy/));
+test('formula in amount rejected',()=>assert.throws(()=>previewCsv(encode(csv().replace('10.25','=1+1')),options,ctx),/decimal/));
+test('project and currency scope preserved at CSV entry',()=>{assert.throws(()=>previewCsv(encode(csv()),options,{...ctx,projectId:'other'}),/mismatch/);assert.throws(()=>previewCsv(encode(csv()),options,{...ctx,currency:'EUR'}),/currency/);});
+for(const [name,s] of Object.entries({unterminated:'a,b\n"x,y\nz,q',quote:'a,b\na"x,y\nz,q',afterQuote:'a,b\n"x"z,y\nz,q',ragged:'a,b\nx,y,z\nz,q',duplicateHeader:'a,a\nx,y\nz,q',bareCR:'a,b\rx,y\rz,q',nul:'a,b\nx,\0\nz,q'}))test(`strict CSV rejects ${name}`,()=>assert.throws(()=>parseCsv(encode(s))));
+test('byte, cell, row and column limits fail without truncation',()=>{assert.throws(()=>parseCsv(new Uint8Array(limits.bytes+1)));assert.throws(()=>parseCsv(encode('a,b\n'+ 'x'.repeat(1001)+',y\nz,q')));assert.throws(()=>parseCsv(encode('a,b\n'+'x,y\n'.repeat(limits.rows))));assert.throws(()=>parseCsv(encode(Array.from({length:33},(_,i)=>'h'+i).join(',')+'\nx,y\nz,q')));});
+test('invalid UTF-8 rejected',()=>assert.throws(()=>parseCsv(Uint8Array.from([0xff,0xfe,1])),/UTF-8/));

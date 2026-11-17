@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export const fields = ['originalBudget','revisedBudget','actuals','openCommitments','estimateToComplete','estimatedFinalCost'];
+export const fields = Object.freeze(['originalBudget','revisedBudget','actuals','openCommitments','estimateToComplete','estimatedFinalCost']);
 const fail = message => { throw new Error(message); };
 const date = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(value).toISOString().slice(0,10) === value;
 function money(value) {
@@ -20,17 +20,24 @@ export function preview(input, context) {
   if (!date(m.asOf) || !date(context.today) || m.asOf > context.today) fail('Invalid report date');
   if (m.commitmentBasis !== 'remaining-unpaid-only' || m.actualsBasis !== 'cumulative') fail('Ambiguous actual or commitment basis');
   if (!Array.isArray(input.rows) || !input.rows.length || input.rows.length > 10000) fail('Invalid row count');
-  const allowed = new Set(['account',...fields]);
+  const allowed = new Set(['account','sourceRow','accountPath',...fields]);
   const seen = new Set();
   const totals = Object.fromEntries(fields.map(k=>[k,0]));
   const rows = input.rows.map((row,index)=>{
     if (Object.keys(row).some(k=>!allowed.has(k))) fail('Unexpected columns: remove unrelated or sensitive fields before import');
     if (typeof row.account !== 'string' || !/^[A-Za-z0-9._-]{1,40}$/.test(row.account) || seen.has(row.account)) fail('Invalid or duplicate account');
     seen.add(row.account);
-    const result = {account:row.account,sourceRow:index+2};
+    if(row.sourceRow!==undefined && (!Number.isSafeInteger(row.sourceRow)||row.sourceRow<1))fail('Invalid source row');
+    const result = {account:row.account,sourceRow:row.sourceRow??index+2};
+    if(row.accountPath!==undefined){
+      if(!Array.isArray(row.accountPath)||!row.accountPath.length||row.accountPath.length>10||row.accountPath.at(-1)!==row.account||row.accountPath.some(a=>typeof a!=='string'||!/^[A-Za-z0-9._-]{1,40}$/.test(a)))fail('Invalid account hierarchy');
+      result.accountPath=[...row.accountPath];
+    }
     for (const key of fields) { result[key] = money(row[key]); totals[key] += result[key]; if (!Number.isSafeInteger(totals[key])) fail('Amount overflow'); }
     return result;
   });
+  const leafPaths=rows.filter(r=>r.accountPath).map(r=>r.accountPath.join('/')).sort();
+  for(let i=0;i<leafPaths.length-1;i++)if(leafPaths[i+1].startsWith(leafPaths[i]+'/'))fail('Account hierarchy contains both parent and detail amounts');
   for (const key of fields) if (money(input.controlTotals?.[key]) !== totals[key]) fail('Source totals do not reconcile');
   const metadata = Object.fromEntries(['tenantId','projectId','revision','periodBasis','sourceName','currency','asOf','commitmentBasis','actualsBasis'].map(k=>[k,m[k]]));
   const content = {profile:input.profile,metadata,rows,totals,unit:'minor-currency-units'};
