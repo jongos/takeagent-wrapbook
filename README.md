@@ -23,6 +23,8 @@ The profile requires all six cost measures and explicit control totals. Missing 
 
 See [host contract](docs/host-contract.md) for the integration boundary and [blockers](docs/blockers.md) for vendor, user and engineering gates. Native export validation, XLSX extraction, authenticated host UI and production verification remain open.
 
+The [evaluation request](docs/vendor-evaluation-request.md) specifies the minimum synthetic PAS workspace or native export package needed next; [PAS mapping research](docs/pas-export-research.md) records field and report-scope distinctions. Personal login alone does not supply company/PAS or API access.
+
 ## CSV preview
 
 Import `previewCsv` from `src/csv.js`. Pass file bytes, options like `fixtures/synthetic-options.json`, and trusted host project context. `fixtures/synthetic-costs.csv` is an invented report, not an actual Wrapbook export. `reviewedMapping` and `completeForSelectedScope` must be true after user review. One final `total` row supplies source totals. No data is written.

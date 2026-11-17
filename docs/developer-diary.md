@@ -25,3 +25,9 @@ Validation: 45 local tests pass including the hierarchy regression, account repl
 ## 2026-11-17 — Require complete hierarchy and expose path changes
 
 Cross-review found mixed path/no-path rows could conceal parent/detail overlap, and unchanged amounts could conceal account hierarchy revisions. Preview now requires paths for every row when any path is supplied. Comparison returns previous/current paths and an explicit hierarchy-change flag. Validation: 47 local tests pass, including both regressions. No production or native export verification occurred; the existing documented blockers remain.
+
+## 2026-11-17 — Record PAS evaluation boundary and export acceptance gates
+
+Rechecked official company setup, PAS activation, reports, accounting integrations and documentation-index sources. The browser-test handoff confirms personal authentication and MFA but no assigned company/report role, PAS workspace or API controls. Recorded the exact unsent request for a synthetic PAS evaluation company or native export-only package, with optional supported API discovery kept separate. Added mapping cautions for cumulative versus period actuals, overlapping totals, combined GL detail and report filter scope. The manifest remains development/live-disabled and now names the company/PAS access gate.
+
+Validation: all 51 synthetic tests pass, including four new report-boundary regressions. No native fixture, public API schema or self-service developer sandbox was located in the reviewed official sources; this does not rule out private partner access. No adapter behavior was broadened without evidence. No company onboarding, fee, payroll/worker workflow, vendor outreach, undocumented API probe or live adapter test occurred. Representative native exports or vendor-provided synthetic company access remain the next dependency.
