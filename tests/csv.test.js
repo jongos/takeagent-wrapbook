@@ -9,7 +9,8 @@ const options={profile:'wrapbook-pas-mapped-csv-v1',reviewedMapping:true,complet
 const encode=s=>new TextEncoder().encode(s);
 function csv(){return [Object.keys(mapping).join(','),['1001','detail','1000/1001',...fields.map(()=>'10.25')].join(','),['1002','detail','1000/1002',...fields.map(()=>'-0.25')].join(','),['','total','',...fields.map(()=>'10.00')].join(',')].join('\r\n');}
 test('mapped CSV preserves exact signed amounts, hierarchy, physical source rows and total provenance',()=>{const p=previewCsv(encode(csv()),options,ctx);assert.equal(p.totals.actuals,1000);assert.deepEqual(p.rows[1].accountPath,['1000','1002']);assert.equal(p.rows[1].sourceRow,3);assert.equal(p.source.totalRow,4);assert.equal(p.source.columns.actuals,6);assert.equal(p.source.sha256.length,64);});
-test('quoted cells, escaped quotes, UTF-8 BOM and multiline source row numbering',()=>{const p=parseCsv(encode('\uFEFFa,b\r\n"a,b","c""d"\r\n"line\n2",z\r\nend,q'));assert.deepEqual(p.records[0].cells,['a,b','c"d']);assert.equal(p.records[2].sourceRow,5);});
+test('quoted cells, escaped quotes, UTF-8 BOM and multiline source row numbering',()=>{const p=parseCsv(encode('\uFEFFa,b\r\n"a,b","c""d"\r\n"line\n2",z\r\nend,q'));assert.deepEqual(p.headers,['a','b']);assert.deepEqual(p.records[0].cells,['a,b','c"d']);assert.equal(p.records[2].sourceRow,5);});
+test('BOM-prefixed headers honor explicit mapping',()=>{const bom=encode('\uFEFF'+csv());assert.equal(previewCsv(bom,options,ctx).totals.actuals,1000);});
 test('missing reviewed mapping rejected',()=>assert.throws(()=>previewCsv(encode(csv()),{...options,reviewedMapping:false},ctx)));
 test('partial or unknown report coverage rejected',()=>assert.throws(()=>previewCsv(encode(csv()),{...options,completeForSelectedScope:false},ctx),/completeness/));
 test('parent and leaf amounts cannot be mixed',()=>assert.throws(()=>previewCsv(encode(csv().replace('1002,detail,1000/1002','1000,detail,1000')),options,ctx),/parent/));
