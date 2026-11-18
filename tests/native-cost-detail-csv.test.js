@@ -62,6 +62,8 @@ test('native PAS detail CSV maps vendor-default columns into fingerprinted snaps
   assert.equal(snapshot.profileMeta.certification, 'provisional');
   assert.equal(review.fundingGap, null);
   assert.equal(review.cashTimingGap, null);
+  assert.equal(snapshot.profileCertification, 'provisional');
+  assert.equal(review.findings.some((f) => f.code === 'PROVISIONAL_VENDOR_PROFILE'), true);
   assert.match(snapshot.warnings.join(' '), /Provisional native/);
 });
 
@@ -99,8 +101,9 @@ test('cost findings carry lineId without funding gap', () => {
   const csv = [header, detail, total].join('\n');
   const p = previewNativePasCostDetailCsv(encode(csv), options(), ctx);
   const f = costFindings(p);
-  assert.equal(f.findings[0].code, 'EFC_ABOVE_REVISED_BUDGET');
-  assert.equal(f.findings[0].lineId, 'wrapbook-account:1101');
+  assert.equal(f.findings.some((x) => x.code === 'PROVISIONAL_VENDOR_PROFILE'), true);
+  const overrun = f.findings.find((x) => x.code === 'EFC_ABOVE_REVISED_BUDGET');
+  assert.equal(overrun.lineId, 'wrapbook-account:1101');
   assert.equal(f.fundingGap, null);
 });
 

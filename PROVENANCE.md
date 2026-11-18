@@ -3,7 +3,7 @@
 | Field | Value |
 | --- | --- |
 | Adapter repository | [jongos/takeagent-wrapbook](https://github.com/jongos/takeagent-wrapbook) |
-| TakeAgent issue | [#59](https://github.com/jongos/takeagent/issues/59) |
+| Host integration | Authorized production-planning host that vendors adapter libraries and runs finance review separately from cost import |
 | Build brief item | Native exports (section 6) — Wrapbook leg |
 
 ## Certified / provisional profiles
@@ -24,7 +24,7 @@ No live Wrapbook API, credentials, or production export samples are stored in th
 
 ## Host vendoring identifiers
 
-When pinning this package into the TakeAgent host, register:
+When pinning this package into the host application, register:
 
 - Integration id: `wrapbook` (`integration-manifest.json`)
 - Native export profile: `wrapbook-pas-cost-detail-csv-v1`

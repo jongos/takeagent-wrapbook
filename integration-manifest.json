@@ -16,6 +16,13 @@
     "source-cell-provenance",
     "local-file-preview-cli"
   ],
+  "exportProfiles": {
+    "wrapbook-pas-cost-detail-csv-v1": {
+      "certification": "provisional",
+      "format": "csv",
+      "reportType": "pas-cost-detail"
+    }
+  },
   "blockers": [
     "Personal login verified; company/PAS evaluation access and report role still required",
     "Native PAS cost-detail CSV certified only after user-attested export; Cost Tracking and episodic layouts unverified",

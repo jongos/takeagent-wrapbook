@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 export {previewFile,previewFileForHost,previewFileFindingLimit} from './file.js';
-export {previewNativePasCostDetailCsv,nativeHeaders,NATIVE_PROFILE} from './native-cost-detail-csv.js';
+export {previewNativePasCostDetailCsv,nativeHeaders,NATIVE_PROFILE,nativeCostDetailProfileDefinition} from './native-cost-detail-csv.js';
 export {topsheetBands,lineIdForAccount,provisionalTaxonomyBandHint} from './taxonomy.js';
 export {presentPreview} from './presentation.js';
 export {previewCsv} from './csv.js';
@@ -66,7 +66,13 @@ export function preview(input, context) {
     ? ['Synthetic profile only; native Wrapbook export compatibility is unverified.', 'Cost data is not evidence of committed financing or collectible collateral.']
     : ['Provisional native PAS detail profile; attested export required before certified interoperability.', 'Cost data is not evidence of committed financing or collectible collateral.'];
   if ((Date.parse(context.today)-Date.parse(m.asOf))/86400000 > 30) warnings.push('Report is more than 30 days old.');
-  return {...content,id,warnings,readOnly:true};
+  return {
+    ...content,
+    id,
+    warnings,
+    readOnly: true,
+  ...(input.profile === NATIVE_COST_DETAIL_PROFILE ? {profileCertification: 'provisional'} : {}),
+  };
 }
 
 const snapshotBasisKeys=['actualsBasis','commitmentBasis'];

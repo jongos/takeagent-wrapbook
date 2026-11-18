@@ -5,6 +5,13 @@ import { lineIdForAccount, provisionalTaxonomyBandHint } from './taxonomy.js';
 
 export const NATIVE_PROFILE = 'wrapbook-pas-cost-detail-csv-v1';
 
+export const nativeCostDetailProfileDefinition = Object.freeze({
+  id: NATIVE_PROFILE,
+  certification: 'provisional',
+  format: 'csv',
+  reportType: 'pas-cost-detail',
+});
+
 /** Default PAS detail cost-report columns per Wrapbook help docs (Nov 2026); users may rename in-product. */
 export const nativeHeaders = Object.freeze({
   account: 'Account',
@@ -121,9 +128,10 @@ export function previewNativePasCostDetailCsv(bytes, options, context) {
   return {
     ...result,
     source,
+    profileCertification: nativeCostDetailProfileDefinition.certification,
     profileMeta: {
-      certification: 'provisional',
-      reportType: 'pas-cost-detail',
+      certification: nativeCostDetailProfileDefinition.certification,
+      reportType: nativeCostDetailProfileDefinition.reportType,
       columnLayout: 'vendor-default-2026-08',
       attestationRequired:
         'User-attested CSV export with default column names, Detail report type, cumulative actuals and remaining PO semantics.',
