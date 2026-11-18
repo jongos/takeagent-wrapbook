@@ -1,0 +1,53 @@
+MediaHedge License
+Version 1.0, November 2026
+
+Copyright (c) 2026 MediaHedge, Inc. All rights reserved.
+
+1. Ownership. This software, including its source code, documentation, packaged
+   skills, connectors, adapters and related files (the "Software"), is owned by
+   MediaHedge, Inc. ("MediaHedge"), the provider of TakeAgent. The Software is
+   licensed, not sold.
+
+2. Permitted use. You may view, download, install and use the Software only to
+   access or use TakeAgent, and only as permitted by the TakeAgent Terms of
+   Service published at https://takeagent.ai/terms, as updated from time to time
+   (the "Terms"). The Terms are incorporated into this License. Any use that the
+   Terms do not permit is not licensed.
+
+3. Restrictions. Except as the Terms or a separate written agreement signed by
+   MediaHedge expressly permit, you may not:
+   (a) copy, modify, translate or create derivative works of the Software,
+       except as needed to install and run it for permitted use;
+   (b) redistribute, sublicense, sell, rent, lease, host or otherwise make the
+       Software available to anyone else;
+   (c) use the Software, or any part of it, to build, train or improve a
+       competing product or service;
+   (d) remove or alter any copyright, license or proprietary notice; or
+   (e) use the Software to bypass TakeAgent's authentication, permissions,
+       usage limits or security controls.
+
+4. Public availability. MediaHedge may publish the Software in a public
+   repository so it can be inspected and installed. Public availability does
+   not grant any right beyond those stated in this License, and is not an
+   open-source license.
+
+5. Third-party components. Third-party components included with the Software
+   remain subject to their own licenses, which control for those components.
+
+6. Contributions. If you submit a contribution (such as a pull request or
+   patch), you grant MediaHedge a perpetual, worldwide, royalty-free,
+   irrevocable license to use, modify and distribute it in any way, and you
+   confirm you have the right to grant that license.
+
+7. Termination. Your rights under this License end automatically if you breach
+   it or the Terms, or if your right to use TakeAgent ends. On termination you
+   must stop using the Software and delete your copies.
+
+8. No warranty; limitation of liability. THE SOFTWARE IS PROVIDED "AS IS",
+   WITHOUT WARRANTY OF ANY KIND. The warranty disclaimer, limitation of
+   liability and other provisions of the Terms apply to the Software as if it
+   were part of the Service.
+
+9. Governing law. This License is governed by the law that governs the Terms.
+
+Questions about this License: MediaHedge, Inc., info@filmhedge.com.

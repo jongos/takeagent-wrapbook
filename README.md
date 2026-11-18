@@ -66,3 +66,7 @@ The worker bounds input to 2 MB, archive expansion to 15 MB, individual parts to
 Use `await previewFileForHost(bytes, options, trustedContext)` from the root exports for HTTP/UI previews. It validates and reconciles the complete report first, then returns at most 30 rows, findings and XLSX cell-provenance records (optional `{limit}` 1–100 as fourth argument). Full totals and identity are preserved; `totalRowCount`, `totalFindingCount`, `truncated` and `presentationOnly: true` explicitly describe the view. Serialized output cannot exceed 256,000 UTF-8 bytes; unusually large metadata fails visibly. `presentPreview(fullResult, {limit})` presents an already validated full result.
 
 Keep the original full result for comparison/import logic; never pass truncated presentation rows to `compare` or persist them as a complete snapshot. `previewFile` remains the complete-data API. The host must still authenticate, remove private scope identifiers where appropriate and enforce request/concurrency limits.
+
+## License
+
+Licensed under the MediaHedge License. Use is permitted only as allowed by the TakeAgent Terms of Service at https://takeagent.ai/terms. See LICENSE.

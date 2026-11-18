@@ -51,3 +51,9 @@ Validation: all 74 tests passed, including 10,000 rows / 20,000 findings, unchan
 ## 2026-11-17 — Record current optional host release
 
 Added `docs/host-release-status.md` linking the deployed TakeAgent CSV/Excel release and explaining the division between shared host file handling and this adapter. Preserved optional installation, no-new-configuration behavior and vendor-access limitations. Refetched origin and verified the existing adapter source was already synchronized. The complete repository suite passed 74/74 tests. This commit changes documentation only; no adapter or deployment change is claimed.
+
+## 2026-11-18 — Adopt the MediaHedge License
+
+Replaced the repository's prior implicit proprietary posture with the MediaHedge License Version 1.0 (`LICENSE`), set `package.json` `license` to `SEE LICENSE IN LICENSE` (left `private: true`), and added a README License section pointing at the TakeAgent Terms of Service. No runtime, test, or dependency changes; third-party package license metadata in `package-lock.json` is unchanged.
+
+Validation: `npm ci`, `npm test`, and `npm audit --omit=dev` pass locally on Node 22 before push.
