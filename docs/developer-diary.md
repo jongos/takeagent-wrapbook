@@ -52,6 +52,24 @@ Validation: all 74 tests passed, including 10,000 rows / 20,000 findings, unchan
 
 Added `docs/host-release-status.md` linking the deployed TakeAgent CSV/Excel release and explaining the division between shared host file handling and this adapter. Preserved optional installation, no-new-configuration behavior and vendor-access limitations. Refetched origin and verified the existing adapter source was already synchronized. The complete repository suite passed 74/74 tests. This commit changes documentation only; no adapter or deployment change is claimed.
 
+## 2026-11-17 — Harden compare, bound findings, BOM CSV, single-pass XLSX, lint CI
+
+Addressed open defect issues #4–#8 on branch `cursor/fix-open-code-defects-a0e4`. `compare()` now rejects mismatched `actualsBasis` and `commitmentBasis` and validates allowed enum values so tampered or drifting reporting basis cannot yield misleading zero deltas. `previewFile()` caps returned review findings at 100 with `totalFindingCount` and `findingsTruncated`; `presentPreview()` uses the full count for its truncation marker. CSV mapping strips one leading UTF-8 BOM after decode so Excel-saved headers match explicit mapping. XLSX preview uses the existing ZIP/XML validation pass only, with in-house shared-string and worksheet parsing; removed the `read-excel-file` dependency and second full parse. CI runs `npm run lint` via ESLint 9, pins `actions/checkout` and `actions/setup-node` to commit SHAs, and adds Dependabot for npm and GitHub Actions.
+
+Validation: `npm run lint`, `npm test` (77/77), and `npm audit --omit=dev` (0 vulnerabilities) on Node 22 locally. Issues #1 and #2 remain blocked on authorized vendor synthetic exports and company/PAS API evaluation; no outreach or live credentials were used. Parallel open PR #9 contains the same code delta under a different branch name; coordinator should merge one branch only.
+
+## 2026-11-17 — XLSX reader: formula strings, typed cells, entities, sparse addresses
+
+Fixed review findings on PR #10 in `src/xlsx-reader.js`. Formula result cells with `t="str"` now commit cached text from `<v>` instead of waiting for inline `<is>` content. Boolean, date and error cell types (`b`, `d`, `e`) fail closed like the former `read-excel-file` path did for non-string values. Sheet lookup decodes XML entities in workbook `name` attributes before comparison. Missing `r` on `<c>` elements uses sequential column positions within the row for both archive inspection and extraction. Added eight XLSX regression tests covering those behaviors.
+
+Validation: `npm run lint` and `npm test` (85/85) locally on Node 22.
+
+## 2026-11-18 — Public release readiness scrub
+
+Ran gitleaks (full history, `--all`), TruffleHog (`git file://`), and manual pattern scans; no credentials or keys in the working tree or git history. Fixtures remain synthetic. Updated outsider-facing README wording, package repository metadata, `.gitignore` local-artifact entries, and neutral phrasing for sign-in evaluation notes in `docs/blockers.md` and `docs/vendor-evaluation-request.md`. No LICENSE added (owner decision). Repository visibility unchanged.
+
+Validation: `npm run lint`, `npm test`, and `npm audit --omit=dev` on Node 22 after fast-forwarding to `9e136eb`.
+
 ## 2026-11-18 — Adopt the MediaHedge License
 
 Replaced the repository's prior implicit proprietary posture with the MediaHedge License Version 1.0 (`LICENSE`), set `package.json` `license` to `SEE LICENSE IN LICENSE` (left `private: true`), and added a README License section pointing at the TakeAgent Terms of Service. No runtime, test, or dependency changes; third-party package license metadata in `package-lock.json` is unchanged.
