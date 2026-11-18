@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "description": "Read-only TakeAgent adapter for explicitly mapped Wrapbook PAS cost snapshots from synthetic or reviewed CSV/XLSX inputs.",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "repository": {
     "type": "git",

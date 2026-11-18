@@ -69,3 +69,9 @@ Validation: `npm run lint` and `npm test` (85/85) locally on Node 22.
 Ran gitleaks (full history, `--all`), TruffleHog (`git file://`), and manual pattern scans; no credentials or keys in the working tree or git history. Fixtures remain synthetic. Updated outsider-facing README wording, package repository metadata, `.gitignore` local-artifact entries, and neutral phrasing for sign-in evaluation notes in `docs/blockers.md` and `docs/vendor-evaluation-request.md`. No LICENSE added (owner decision). Repository visibility unchanged.
 
 Validation: `npm run lint`, `npm test`, and `npm audit --omit=dev` on Node 22 after fast-forwarding to `9e136eb`.
+
+## 2026-11-18 — Adopt the MediaHedge License
+
+Replaced the repository's prior implicit proprietary posture with the MediaHedge License Version 1.0 (`LICENSE`), set `package.json` `license` to `SEE LICENSE IN LICENSE` (left `private: true`), and added a README License section pointing at the TakeAgent Terms of Service. No runtime, test, or dependency changes; third-party package license metadata in `package-lock.json` is unchanged.
+
+Validation: `npm ci`, `npm test`, and `npm audit --omit=dev` pass locally on Node 22 before push.
