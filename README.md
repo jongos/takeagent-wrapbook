@@ -1,6 +1,6 @@
 # TakeAgent Wrapbook adapter spike
 
-Private, read-only development for [TakeAgent issue #59](https://github.com/jongos/takeagent/issues/59). This repository implements bounded CSV and values-only XLSX mapping, synthetic cost-snapshot previews and revision comparisons. It does not connect to Wrapbook or modify TakeAgent projects. See `integration-manifest.json` for build discovery; live integration remains disabled.
+Read-only adapter spike for [TakeAgent issue #59](https://github.com/jongos/takeagent/issues/59). This repository implements bounded CSV and values-only XLSX mapping, synthetic cost-snapshot previews and revision comparisons. It does not connect to Wrapbook or modify TakeAgent projects. See `integration-manifest.json` for build discovery; live integration remains disabled.
 
 Run `npm ci` then `npm test` with Node 22 or newer. No credentials are required. See the test fixture for the input contract. `preview(input, context)` validates a caller-selected project and tenant, currency, report basis and control totals, then returns distinct cost fields in integer minor units, row provenance, a deterministic identity and warnings. `compare` checks snapshot compatibility and reports cost changes without claiming a funding gap.
 

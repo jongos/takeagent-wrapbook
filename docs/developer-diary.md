@@ -63,3 +63,9 @@ Validation: `npm run lint`, `npm test` (77/77), and `npm audit --omit=dev` (0 vu
 Fixed review findings on PR #10 in `src/xlsx-reader.js`. Formula result cells with `t="str"` now commit cached text from `<v>` instead of waiting for inline `<is>` content. Boolean, date and error cell types (`b`, `d`, `e`) fail closed like the former `read-excel-file` path did for non-string values. Sheet lookup decodes XML entities in workbook `name` attributes before comparison. Missing `r` on `<c>` elements uses sequential column positions within the row for both archive inspection and extraction. Added eight XLSX regression tests covering those behaviors.
 
 Validation: `npm run lint` and `npm test` (85/85) locally on Node 22.
+
+## 2026-11-18 — Public release readiness scrub
+
+Ran gitleaks (full history, `--all`), TruffleHog (`git file://`), and manual pattern scans; no credentials or keys in the working tree or git history. Fixtures remain synthetic. Updated outsider-facing README wording, package repository metadata, `.gitignore` local-artifact entries, and neutral phrasing for sign-in evaluation notes in `docs/blockers.md` and `docs/vendor-evaluation-request.md`. No LICENSE added (owner decision). Repository visibility unchanged.
+
+Validation: `npm run lint`, `npm test`, and `npm audit --omit=dev` on Node 22 after fast-forwarding to `9e136eb`.
