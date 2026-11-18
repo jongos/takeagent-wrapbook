@@ -1,0 +1,16 @@
+{
+  "format": "csv",
+  "profile": "wrapbook-pas-cost-detail-csv-v1",
+  "completeForSelectedScope": true,
+  "metadata": {
+    "tenantId": "synthetic-tenant",
+    "projectId": "synthetic-project",
+    "currency": "USD",
+    "revision": "native-r1",
+    "sourceName": "synthetic-pas-detail-native-layout",
+    "asOf": "2026-11-01",
+    "periodBasis": "detail;cumulative-actuals;remaining-pos;effective-through-2026-11-01",
+    "commitmentBasis": "remaining-unpaid-only",
+    "actualsBasis": "cumulative"
+  }
+}

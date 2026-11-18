@@ -5,6 +5,7 @@
   "liveEnabled": false,
   "capabilities": [
     "read-only-preview",
+    "provisional-native-pas-cost-detail-csv",
     "explicit-csv-mapping",
     "signed-cost-reconciliation",
     "revision-comparison",
@@ -17,7 +18,7 @@
   ],
   "blockers": [
     "Personal login verified; company/PAS evaluation access and report role still required",
-    "Native PAS and Cost Tracking report compatibility unverified",
+    "Native PAS cost-detail CSV certified only after user-attested export; Cost Tracking and episodic layouts unverified",
     "Authenticated TakeAgent host integration and production verification required",
     "Live API availability and terms unverified"
   ],

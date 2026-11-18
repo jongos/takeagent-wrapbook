@@ -1,11 +1,16 @@
 import { createHash } from 'node:crypto';
 export {previewFile,previewFileForHost,previewFileFindingLimit} from './file.js';
+export {previewNativePasCostDetailCsv,nativeHeaders,NATIVE_PROFILE} from './native-cost-detail-csv.js';
+export {topsheetBands,lineIdForAccount,provisionalTaxonomyBandHint} from './taxonomy.js';
 export {presentPreview} from './presentation.js';
 export {previewCsv} from './csv.js';
 export {previewXlsx} from './xlsx.js';
 export {costFindings} from './companion.js';
 
 export const fields = Object.freeze(['originalBudget','revisedBudget','actuals','openCommitments','estimateToComplete','estimatedFinalCost']);
+export const SYNTHETIC_PROFILE = 'wrapbook-pas-synthetic-v1';
+export const NATIVE_COST_DETAIL_PROFILE = 'wrapbook-pas-cost-detail-csv-v1';
+const supportedProfiles = new Set([SYNTHETIC_PROFILE, NATIVE_COST_DETAIL_PROFILE]);
 const fail = message => { throw new Error(message); };
 const date = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(value).toISOString().slice(0,10) === value;
 function money(value) {
@@ -15,9 +20,9 @@ function money(value) {
   return sign * (Number(whole)*100 + Number(fraction.padEnd(2,'0')));
 }
 
-/** Strict synthetic mapped-row profile. Not a verified native vendor export schema. */
+/** Validated cost snapshot from synthetic JSON rows or a native PAS detail CSV profile. */
 export function preview(input, context) {
-  if (input.profile !== 'wrapbook-pas-synthetic-v1') fail('Unsupported report profile');
+  if (!supportedProfiles.has(input.profile)) fail('Unsupported report profile');
   const m = input.metadata;
   if (!m || m.tenantId !== context.tenantId || m.projectId !== context.projectId) fail('Project or tenant mismatch');
   for (const key of ['tenantId','projectId','revision','periodBasis','sourceName']) if (typeof m[key] !== 'string' || !m[key].trim()) fail('Missing provenance');
@@ -25,7 +30,7 @@ export function preview(input, context) {
   if (!date(m.asOf) || !date(context.today) || m.asOf > context.today) fail('Invalid report date');
   if (m.commitmentBasis !== 'remaining-unpaid-only' || m.actualsBasis !== 'cumulative') fail('Ambiguous actual or commitment basis');
   if (!Array.isArray(input.rows) || !input.rows.length || input.rows.length > 10000) fail('Invalid row count');
-  const allowed = new Set(['account','sourceRow','accountPath',...fields]);
+  const allowed = new Set(['account','sourceRow','accountPath','lineId','taxonomyBandHint','taxonomyBandHintSource',...fields]);
   const seen = new Set();
   const totals = Object.fromEntries(fields.map(k=>[k,0]));
   const rows = input.rows.map((row,index)=>{
@@ -39,6 +44,15 @@ export function preview(input, context) {
       result.accountPath=[...row.accountPath];
     }
     for (const key of fields) { result[key] = money(row[key]); totals[key] += result[key]; if (!Number.isSafeInteger(totals[key])) fail('Amount overflow'); }
+    if (row.lineId !== undefined) {
+      if (typeof row.lineId !== 'string' || !/^wrapbook-account:[A-Za-z0-9._-]{1,40}$/.test(row.lineId)) fail('Invalid line id');
+      result.lineId = row.lineId;
+    }
+    if (row.taxonomyBandHint !== undefined) {
+      if (typeof row.taxonomyBandHint !== 'string' || typeof row.taxonomyBandHintSource !== 'string') fail('Invalid taxonomy hint');
+      result.taxonomyBandHint = row.taxonomyBandHint;
+      result.taxonomyBandHintSource = row.taxonomyBandHintSource;
+    }
     return result;
   });
   const leafPaths=new Set(rows.filter(r=>r.accountPath).map(r=>r.accountPath.join('/')));
@@ -48,7 +62,9 @@ export function preview(input, context) {
   const metadata = Object.fromEntries(['tenantId','projectId','revision','periodBasis','sourceName','currency','asOf','commitmentBasis','actualsBasis'].map(k=>[k,m[k]]));
   const content = {profile:input.profile,metadata,rows,totals,unit:'minor-currency-units'};
   const id = createHash('sha256').update(JSON.stringify(content)).digest('hex');
-  const warnings = ['Synthetic profile only; native Wrapbook export compatibility is unverified.','Cost data is not evidence of committed financing or collectible collateral.'];
+  const warnings = input.profile === SYNTHETIC_PROFILE
+    ? ['Synthetic profile only; native Wrapbook export compatibility is unverified.', 'Cost data is not evidence of committed financing or collectible collateral.']
+    : ['Provisional native PAS detail profile; attested export required before certified interoperability.', 'Cost data is not evidence of committed financing or collectible collateral.'];
   if ((Date.parse(context.today)-Date.parse(m.asOf))/86400000 > 30) warnings.push('Report is more than 30 days old.');
   return {...content,id,warnings,readOnly:true};
 }
