@@ -11,7 +11,7 @@ Run `npm ci` then `npm test` with Node 22 or newer. No credentials are required.
 | `wrapbook-pas-synthetic-v1` mapped JSON rows | Tested synthetic contract only |
 | `wrapbook-pas-mapped-csv-v1` explicitly mapped UTF-8 CSV | Tested with synthetic fixtures; no native vendor compatibility claim |
 | `wrapbook-pas-mapped-xlsx-v1` selected values-only worksheet/range | Tested synthetic contract; explicit mapping required |
-| Native PAS export profiles | Not verified |
+| `wrapbook-pas-cost-detail-csv-v1` PAS **Detail** cost report CSV (default columns) | **Provisional** ? matches [public PAS column defaults](https://help.wrapbook.com/v1/docs/cost-reports-pas); attested export required to certify |
 | Cost Tracking exports | Not supported |
 | PDF | Not parsed; future reconciliation evidence only |
 | PO/GL merges and live API | Not implemented |
@@ -22,7 +22,7 @@ An integrating server must authenticate the caller and derive `context` from its
 
 The profile requires all six cost measures and explicit control totals. Missing fields fail rather than becoming zero. Credits are preserved. Actuals must be cumulative and commitments must be remaining unpaid obligations; no automatic PO/AP/payroll merge or EFC inference occurs. Only two-decimal USD/EUR/GBP/CAD/AUD are accepted; currency conversion is absent. One row per unique leaf account is required. Optional account paths preserve hierarchy; parent/detail mixtures are rejected. Episodic, summary/detail and multicurrency reports need further profiles. The caller must validate those semantics against the source report.
 
-See [host contract](docs/host-contract.md) for the integration boundary and [blockers](docs/blockers.md) for vendor, user and engineering gates. Native export validation, authenticated host UI and production verification remain open.
+See [host contract](docs/host-contract.md) for the integration boundary, [native profile doc](docs/profiles/wrapbook-pas-cost-detail-csv-v1.md) for column mapping, and [PROVENANCE.md](PROVENANCE.md) for host pin identifiers. [blockers](docs/blockers.md) lists remaining vendor and engineering gates.
 
 The [evaluation request](docs/vendor-evaluation-request.md) specifies the minimum synthetic PAS workspace or native export package needed next; [PAS mapping research](docs/pas-export-research.md) records field and report-scope distinctions. Personal login alone does not supply company/PAS or API access.
 
@@ -53,7 +53,7 @@ const {snapshot, review} = await previewFile(await readFile('fixtures/synthetic-
 console.log(snapshot.totals, review);
 ```
 
-Runnable local example: `node bin/preview.mjs fixtures/synthetic-costs.csv fixtures/synthetic-options.json fixtures/synthetic-context.json`. The CLI writes JSON to stdout and changes no files. The context fixture is synthetic; a host must construct trusted authorized context itself.
+Runnable local example: `node bin/preview.mjs fixtures/synthetic-costs.csv fixtures/synthetic-options.json fixtures/synthetic-context.json`. For the provisional native layout: `node bin/preview.mjs fixtures/native-cost-detail-synthetic.csv fixtures/native-cost-detail-options.json fixtures/synthetic-context.json`. The CLI writes JSON to stdout and changes no files. The context fixture is synthetic; a host must construct trusted authorized context itself.
 
 For XLSX, use `format: "xlsx"`, `profile: "wrapbook-pas-mapped-xlsx-v1"`, exact `sheet` name and `range: {startRow: 1, endRow: 4, startColumn: 1, endColumn: 9}` with the same mapping/metadata contract. Selected range must contain a header, detail rows and final control total. Account/hierarchy/row-type identifiers must be stored as text; numeric IDs are rejected to avoid losing displayed leading zeroes. Amounts preserve raw decimal text, not Excel formatted display. No locale conversion or formula calculation occurs.
 
