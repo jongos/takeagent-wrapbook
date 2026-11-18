@@ -4,7 +4,7 @@ Reviewed November 17, 2026. This is an unsent technical request, not an assertio
 
 ## Access evidence and present boundary
 
-The browser-test handoff reports successful personal sign-in, MFA enabled and no assigned role, followed by a logged-in screen without a company, PAS workspace or API controls. The welcome page directs company setup through the Wrapbook team. That verifies personal authentication only. Company-detail, setup-fee and payroll/insurance onboarding options were not used. No company data, report export or vendor API request was tested.
+A manual sign-in check reported successful personal sign-in, MFA enabled and no assigned role, followed by a logged-in screen without a company, PAS workspace or API controls. The welcome page directs company setup through the Wrapbook team. That verifies personal authentication only. Company-detail, setup-fee and payroll/insurance onboarding options were not used. No company data, report export or vendor API request was tested.
 
 Wrapbook documents a team-assisted company setup followed by an invitation. PAS activation requires its Customer Success Manager or Support, and reporting access depends on roles. These are separate from a personal login. [Company setup](https://help.wrapbook.com/docs/about-companies), [PAS activation](https://help.wrapbook.com/docs/about-production-accounting), [report access](https://help.wrapbook.com/docs/reports-index).
 

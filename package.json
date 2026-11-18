@@ -1,8 +1,13 @@
 {
   "name": "takeagent-wrapbook",
   "version": "0.3.0",
+  "description": "Read-only TakeAgent adapter for explicitly mapped Wrapbook PAS cost snapshots from synthetic or reviewed CSV/XLSX inputs.",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jongos/takeagent-wrapbook.git"
+  },
   "exports": {
     ".": "./src/index.js",
     "./csv": "./src/csv.js",

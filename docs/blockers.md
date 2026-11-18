@@ -2,7 +2,7 @@
 
 ## Vendor access
 
-- Current browser handoff verifies personal login only; no company/PAS workspace or API access was visible. Company setup and PAS activation are distinct access gates. See the [unsent evaluation request](vendor-evaluation-request.md) for the smallest sandbox or export-only request that unlocks testing.
+- A manual sign-in check verified personal login only; no company/PAS workspace or API access was visible. Company setup and PAS activation are distinct access gates. See the [unsent evaluation request](vendor-evaluation-request.md) for the smallest sandbox or export-only request that unlocks testing.
 
 - No vendor-supported API credentials, scopes, partner agreement, rate limits or revocation behavior have been verified. Keep live connectivity disabled. Existing integrations with accounting vendors do not establish a public API.
 - PAS cost reporting is documented, but no native export version has been validated against representative fixtures. PAS and Cost Tracking require separate compatibility verification.
