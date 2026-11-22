@@ -16,5 +16,6 @@ export function costFindings(preview) {
     if(row.estimatedFinalCost>row.revisedBudget)findings.push({...base,code:'EFC_ABOVE_REVISED_BUDGET',amount:row.estimatedFinalCost-row.revisedBudget,question:'Review whether the separate finance plan covers the cost change.'});
     if(row.actuals>row.estimatedFinalCost)findings.push({...base,code:'ACTUALS_ABOVE_EFC',question:'Confirm actuals and EFC use the same reporting basis.'});
   }
-  return {readOnly:true,findings,warnings:[...preview.warnings],unit:preview.unit,fundingGap:null,cashTimingGap:null,limitation:'Financing availability and cash timing require separate commitment evidence and dated cash flows.'};
+  const noDeficit=null;
+  return {readOnly:true,findings,warnings:[...preview.warnings],unit:preview.unit,fundingGap:noDeficit,cashTimingGap:noDeficit,fundingDeficit:noDeficit,cashTimingDeficit:noDeficit,limitation:'Financing availability and cash timing require separate commitment evidence and dated cash flows.'};
 }

@@ -39,7 +39,7 @@ Each detail row includes:
 - `lineId`: `wrapbook-account:<code>` — stable across revisions when the account code is unchanged
 - `taxonomyBandHint` + `taxonomyBandHintSource`: provisional prefix rules (`provisional-prefix`) aligned to TakeAgent topsheet bands (`above-the-line`, `below-the-line`, `fringes`, `contingency`, `completion-bond`, `insurance`, `errors-omissions`, `completion-delivery`, `financing-cost`, `reserve`, `unclassified`)
 
-Hints are **not** certified COA semantics and must not drive `finance.review` conclusions.
+Hints are **not** certified COA semantics and must not drive finance-review conclusions.
 
 ## Host options
 
@@ -68,4 +68,4 @@ Until then, the fixture `fixtures/native-cost-detail-synthetic.csv` is fully syn
 
 ## Funding boundary
 
-The adapter returns `fundingGap: null` and `cashTimingGap: null`. Plan impact requires a separate user-approved map into `finance.review`.
+The adapter returns `fundingDeficit: null` and `cashTimingDeficit: null`. Legacy `fundingGap` and `cashTimingGap` fields remain as deprecated aliases with identical values. Plan impact requires a separate user-approved finance review after cost import.

@@ -20,7 +20,7 @@ Validation: 41 local tests pass, covering the complete synthetic CSV path, stric
 
 Added source-linked cost consistency questions and account-level revision changes so offsetting account changes remain visible even when totals are unchanged. Findings preserve the separation between cost variance, financing availability and cash timing. Corrected the hierarchy ancestor guard to check every prefix rather than adjacent sorted paths; a lexical sibling could otherwise hide a parent/detail overlap.
 
-Validation: 45 local tests pass including the hierarchy regression, account replacement, cost provenance, nonmutation and null financing/cash gap results. Hosted Node 22 and 24 CI passed for the preceding CSV commit 89c22e1 ([run](https://github.com/jongos/takeagent-wrapbook/actions/runs/44141825580)); this entry does not claim the new commit's remote result. Production host integration and native vendor/XLSX validation remain open; no deployment occurred.
+Validation: 45 local tests pass including the hierarchy regression, account replacement, cost provenance, nonmutation and null financing/cash deficit results. Hosted Node 22 and 24 CI passed for the preceding CSV commit 89c22e1 ([run](https://github.com/jongos/takeagent-wrapbook/actions/runs/44141825580)); this entry does not claim the new commit's remote result. Production host integration and native vendor/XLSX validation remain open; no deployment occurred.
 
 ## 2026-11-17 — Require complete hierarchy and expose path changes
 
