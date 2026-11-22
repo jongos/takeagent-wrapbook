@@ -31,4 +31,4 @@ When pinning this package into the host application, register:
 - Mapped fallback profiles: `wrapbook-pas-mapped-csv-v1`, `wrapbook-pas-mapped-xlsx-v1`
 - Internal snapshot profiles: `wrapbook-pas-synthetic-v1` (parser output only)
 
-Funding interpretation remains in host `finance.review`; adapters refuse to infer funding gaps from cost snapshots alone.
+Funding interpretation remains in host finance review; adapters refuse to infer funding deficits from cost snapshots alone.

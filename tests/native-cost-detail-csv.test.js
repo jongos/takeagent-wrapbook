@@ -62,6 +62,8 @@ test('native PAS detail CSV maps vendor-default columns into fingerprinted snaps
   assert.equal(snapshot.profileMeta.certification, 'provisional');
   assert.equal(review.fundingGap, null);
   assert.equal(review.cashTimingGap, null);
+  assert.equal(review.fundingDeficit, null);
+  assert.equal(review.cashTimingDeficit, null);
   assert.equal(snapshot.profileCertification, 'provisional');
   assert.equal(review.findings.some((f) => f.code === 'PROVISIONAL_VENDOR_PROFILE'), true);
   assert.match(snapshot.warnings.join(' '), /Provisional native/);
@@ -93,7 +95,7 @@ test('renamed columns require mapped profile', () => {
   assert.throws(() => previewNativePasCostDetailCsv(encode(renamed), options(), ctx), /Native profile requires/);
 });
 
-test('cost findings carry lineId without funding gap', () => {
+test('cost findings carry lineId without funding deficit', () => {
   const amounts = ['100.00', '100.00', '10.00', '0.00', '100.00', '110.00'];
   const header = [nativeHeaders.account, nativeHeaders.description, ...measureHeaders].join(',');
   const detail = ['1101', 'Synth overrun', ...amounts].join(',');
@@ -105,6 +107,8 @@ test('cost findings carry lineId without funding gap', () => {
   const overrun = f.findings.find((x) => x.code === 'EFC_ABOVE_REVISED_BUDGET');
   assert.equal(overrun.lineId, 'wrapbook-account:1101');
   assert.equal(f.fundingGap, null);
+  assert.equal(f.fundingDeficit, null);
+  assert.equal(f.cashTimingDeficit, null);
 });
 
 test('account token with description suffix parses leaf code', () => {

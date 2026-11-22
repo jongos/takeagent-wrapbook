@@ -4,7 +4,7 @@ Wrapbook is an optional, independently installed skill at https://takeagent.ai/s
 
 CSV file preview remains available through the website and skills.preview. The latest host release preserves this workflow; it does not claim a newly released Wrapbook Excel UI.
 
-Shared website/agent file handling belongs to [jongos/takeagent](https://github.com/jongos/takeagent), not a duplicate implementation in this adapter repository. The release is [PR #77](https://github.com/jongos/takeagent/pull/77), merged as `d6bc6e4e80ee3b9c9b412783d4e58ecfd644da8f`, following the four-skill release in [PR #76](https://github.com/jongos/takeagent/pull/76). The source and instructions are in `src/lib/skill-files.ts`, `src/lib/tabular-skill-preview.ts`, `src/lib/agent-skill-tools.ts` and `docs/optional-skills.md` in the host repository.
+Shared website and agent file handling for tabular imports ships with the TakeAgent host application. See [TakeAgent integrations](https://takeagent.ai/integrations) and the [Wrapbook adapter page](https://takeagent.ai/integrations/wrapbook). This adapter repository implements bounded read-only mapping only and does not duplicate host preview infrastructure.
 
 No vendor API credentials, new environment variables or database migration are required for this host release. Existing agent authorization, plan and usage rules apply. Skills remain off until explicitly added and removable independently. Selected-file previews do not automatically synchronize vendor accounts, establish financing, persist uploaded reports or alter saved finance plans. Native export certification and direct API access remain subject to the repository's documented vendor blockers.
 

@@ -1,8 +1,8 @@
 # TakeAgent Wrapbook adapter spike
 
-Read-only adapter spike for [TakeAgent issue #59](https://github.com/jongos/takeagent/issues/59). This repository implements bounded CSV and values-only XLSX mapping, synthetic cost-snapshot previews and revision comparisons. It does not connect to Wrapbook or modify TakeAgent projects. See `integration-manifest.json` for build discovery; live integration remains disabled.
+Read-only adapter spike for the [Wrapbook integration](https://takeagent.ai/integrations/wrapbook). This repository implements bounded CSV and values-only XLSX mapping, synthetic cost-snapshot previews and revision comparisons. It does not connect to Wrapbook or modify TakeAgent projects. See `integration-manifest.json` for build discovery; live integration remains disabled.
 
-Run `npm ci` then `npm test` with Node 22 or newer. No credentials are required. See the test fixture for the input contract. `preview(input, context)` validates a caller-selected project and tenant, currency, report basis and control totals, then returns distinct cost fields in integer minor units, row provenance, a deterministic identity and warnings. `compare` checks snapshot compatibility and reports cost changes without claiming a funding gap.
+Run `npm ci` then `npm test` with Node 22 or newer. No credentials are required. See the test fixture for the input contract. `preview(input, context)` validates a caller-selected project and tenant, currency, report basis and control totals, then returns distinct cost fields in integer minor units, row provenance, a deterministic identity and warnings. `compare` checks snapshot compatibility and reports cost changes without claiming a funding deficit.
 
 ## Support matrix
 
@@ -38,7 +38,7 @@ The reader accepts UTF-8 comma-delimited CSV with strict quoting and CRLF/LF lin
 
 The trusted context must include the selected project's currency. sourceName is a stable source-report identity and must remain constant across revisions.
 
-`compare` includes account-level additions/removals and deltas even when report totals stay unchanged. `costFindings` from `src/companion.js` returns source-linked questions for EFC above revised budget and actuals above EFC. It carries warnings forward and deliberately returns null funding/cash-timing gaps; cost data cannot establish those values.
+`compare` includes account-level additions/removals and deltas even when report totals stay unchanged. `costFindings` from `src/companion.js` returns source-linked questions for EFC above revised budget and actuals above EFC. It carries warnings forward and deliberately returns null `fundingDeficit` and `cashTimingDeficit` values (legacy `fundingGap` and `cashTimingGap` keys are deprecated aliases with identical values); cost data cannot establish financing or cash-timing deficits.
 
 ## Complete interim file workflow
 

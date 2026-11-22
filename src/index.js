@@ -85,5 +85,5 @@ export function compare(previous,current) {
   if (previous.metadata.revision === current.metadata.revision) fail('Revision identifier reused with changed content');
   const before=new Map(previous.rows.map(r=>[r.account,r])),after=new Map(current.rows.map(r=>[r.account,r]));
   const accounts=[...new Set([...before.keys(),...after.keys()])].sort().map(account=>({account,change:!before.has(account)?'added':!after.has(account)?'removed':'retained',previousPath:before.get(account)?.accountPath?[...before.get(account).accountPath]:null,currentPath:after.get(account)?.accountPath?[...after.get(account).accountPath]:null,hierarchyChanged:JSON.stringify(before.get(account)?.accountPath??null)!==JSON.stringify(after.get(account)?.accountPath??null),deltas:Object.fromEntries(fields.map(k=>[k,(after.get(account)?.[k]??0)-(before.get(account)?.[k]??0)]))}));
-  return {duplicate:false,deltas:Object.fromEntries(fields.map(k=>[k,current.totals[k]-previous.totals[k]])),accounts,warning:'Cost changes do not establish a financing or cash-timing gap.'};
+  return {duplicate:false,deltas:Object.fromEntries(fields.map(k=>[k,current.totals[k]-previous.totals[k]])),accounts,warning:'Cost changes do not establish a financing or cash-timing deficit.'};
 }

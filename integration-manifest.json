@@ -29,6 +29,6 @@
     "Authenticated TakeAgent host integration and production verification required",
     "Live API availability and terms unverified"
   ],
-  "sourceIssue": "https://github.com/jongos/takeagent/issues/59",
+  "sourceIssue": "https://takeagent.ai/integrations/wrapbook",
   "repository": "https://github.com/jongos/takeagent-wrapbook"
 }
